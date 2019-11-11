@@ -74,3 +74,54 @@ class Solution {
         return -1;
     }
 }
+
+class Solution {
+    public double findMedianSortedArrays(int[] nums1, int[] nums2) {
+        if (nums1.length < nums2.length)
+            return findMedianSortedArrays(nums2, nums1);
+        if (nums2.length == 0) {
+            int m = nums1.length;
+            return m % 2 != 0 ? nums1[(m / 2)] : ((double) (nums1[m / 2] + nums1[(m / 2) - 1]) / 2);
+        }
+        int m = nums1.length, n = nums2.length;
+        int half = (m + n) / 2;
+
+        int low = 0, high = half;
+        while (low + 1 < high) {
+            int num1Mid = (low + high) / 2, num2Mid = half - num1Mid;
+            int num1Left = num1Mid <= 0 || num1Mid > m ? Integer.MIN_VALUE : nums1[num1Mid - 1];
+            int num1Right = num1Mid < 0 || num1Mid >= m ? Integer.MAX_VALUE : nums1[num1Mid];
+            int num2Left = num2Mid <= 0 || num2Mid > n ? Integer.MIN_VALUE : nums2[num2Mid - 1];
+            int num2Right = num2Mid < 0 || num2Mid >= n ? Integer.MAX_VALUE : nums2[num2Mid];
+            if (num1Right < num2Left) {
+                low = num1Mid;
+            } else if (num1Left > num2Right) {
+                high = num1Mid;
+            } else
+                low = num1Mid;
+        }
+
+        int num1Mid = low, num2Mid = half - num1Mid, cut = 0;
+        int num1Left = num1Mid == 0 ? Integer.MIN_VALUE : nums1[num1Mid - 1];
+        int num1Right = num1Mid == m ? Integer.MAX_VALUE : nums1[num1Mid];
+        int num2Left = num2Mid == 0 ? Integer.MIN_VALUE : nums2[num2Mid - 1];
+        int num2Right = num2Mid == n ? Integer.MAX_VALUE : nums2[num2Mid];
+        if (num1Left <= num2Right && num1Right >= num2Left) {
+            cut = low;
+        } else
+            cut = high;
+
+        num1Mid = cut;
+        num2Mid = half - num1Mid;
+        num1Left = num1Mid == 0 ? Integer.MIN_VALUE : nums1[num1Mid - 1];
+        num1Right = num1Mid == m ? Integer.MAX_VALUE : nums1[num1Mid];
+        num2Left = num2Mid == 0 ? Integer.MIN_VALUE : nums2[num2Mid - 1];
+        num2Right = num2Mid == n ? Integer.MAX_VALUE : nums2[num2Mid];
+
+        if ((m + n) % 2 == 1) {
+            return Math.min(num1Right, num2Right);
+        } else {
+            return (double) (Math.max(num1Left, num2Left) + Math.min(num1Right, num2Right)) / 2;
+        }
+    }
+}
